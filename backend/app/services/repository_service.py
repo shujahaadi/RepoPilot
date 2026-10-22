@@ -81,6 +81,20 @@ def clone_repository(repository_url: str) -> dict:
                 repository_path
             ).as_posix()
 
+            # Normalize IDs to repository-relative paths.
+            for function in report["functions"]:
+                function["id"] = (
+                    f"{relative_path}::{function['qualified_name']}"
+                )
+
+            for call in report["calls"]:
+                if call["caller"] is None:
+                    call["caller_id"] = f"{relative_path}::<module>"
+                else:
+                    call["caller_id"] = (
+                        f"{relative_path}::{call['caller']}"
+                    )
+
             functions = report["functions"]
             calls = report["calls"]
             imports = report["imports"]
